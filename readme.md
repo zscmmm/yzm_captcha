@@ -49,7 +49,7 @@ python demo_geetest3nine.py
 
 - 下载下来以后, 把模型放到项目的指定位置即可, 一般放到 model 目录下(直接替换即可)
 
-- [huggingface:](https://huggingface.co/zscmmm/yzm7)
+- [huggingface:](https://huggingface.co/zscmmm/yzm)
 
 ## 简单的案例展示
 
