@@ -16,6 +16,7 @@ gtclick = GTClick(
 if __name__ == '__main__':
     i = "assets/word3/pic_00356_20119.png"
     outdir = "example/temp1"
+    Path(outdir).mkdir(parents=True, exist_ok=True)
     Path(outdir).mkdir(exist_ok=True)
     out = gtclick.run(i)
     # 高 * 宽
