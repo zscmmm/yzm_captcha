@@ -103,12 +103,3 @@ class SiameseOnnx():
     
 
 
-# if __name__ == '__main__':
-#     siamese = SiameseOnnx("model/g3word6300/simvgg19.onnx")
-#     img1 = "testimg/ques_00002_20624_1.png"
-#     img2 = "testimg/ques_00003_75122_0.png"
-#     result = siamese.predict(img1, img2)
-#     print(result)
-#     result1,  result2 = siamese.predict_list([img1, img2], [img1, img2])
-#     print(result1, result2)
-#     print(type(result1[0]), type(result2))

@@ -1,0 +1,21 @@
+gt:
+  click:
+    word:
+      # yolo 检测模型路径
+      pdetect: model/g3word6300/detect.pt
+      #孪生神经网络模型路径 ,如果没有则用 detect 模型
+      per: "model/g3word6300/simvgg19.onnx"
+      # yolo 分类模型(一定要填写下面的标签)
+      # 会根据这个类别来进行分类, 最多支持两个类别, 如果是两个,则第一个是具有顺序的字符类别,第二个是目标类别
+      # 当有两个标签的时候,具有顺序的一定要放在第一个
+      # 一个 char 标签, 一个 target 标签
+      pclass: "model/g3word6300/muti.pt"
+      pclasstags: ["char", "target"]
+    nine:
+      # 可以直接根据九宫格把图片进行划分,因此只需要一个分类模型即可
+      pclass: model/nine3/best.pt
+    icon4mi:
+      pdetect: model/icon4mi800/detect.pt
+      per: "model/icon4mi800/simvgg19.onnx"
+      pclass: model/icon4mi800/muti.pt
+      pclasstags: ["target"]

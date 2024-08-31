@@ -14,8 +14,8 @@ import pandas as pd
 class GTnine():
     def __init__(
             self,
-            path_yolo_class: Optional[str] = None,
-            path_per: Optional[str] = None,
+            pclass: Optional[str] = None,
+            per: Optional[str] = None,
             conf=0.65, 
             rmalpha: bool = True, 
             verbose=False,
@@ -23,9 +23,9 @@ class GTnine():
         '''
         暂时实现 yolo 分类模型, 感觉孪生神经网络模型不太适合
         '''
-        assert path_yolo_class or path_per, "path_yolo_class and path_per is None"
-        self.path_yolo_class = path_yolo_class
-        self.path_per = path_per
+        assert pclass or per, "pclass and per is None"
+        self.pclass = pclass
+        self.per = per
 
 
         self.modeltype = None
@@ -33,16 +33,16 @@ class GTnine():
         self.verbose = verbose
         self.rmalpha = rmalpha
 
-        if self.path_yolo_class and not self.path_per:
+        if self.pclass and not self.per:
             self.modeltype = 1
-            self.modelyoloc = YoloC(self.path_yolo_class, task="classify", verbose=self.verbose)
-        elif self.path_per and not self.path_yolo_class:
+            self.modelyoloc = YoloC(self.pclass, task="classify", verbose=self.verbose)
+        elif self.per and not self.pclass:
             self.modeltype = 2
-            self.modelpre = SiameseOnnx(self.path_per, providers=['CPUExecutionProvider'])
+            self.modelpre = SiameseOnnx(self.per, providers=['CPUExecutionProvider'])
         else:
             self.modeltype = 3
-            self.modelyoloc = YoloC(self.path_yolo_class, task="classify", verbose=self.verbose)
-            self.modelpre = SiameseOnnx(self.path_per, providers=['CPUExecutionProvider'])
+            self.modelyoloc = YoloC(self.pclass, task="classify", verbose=self.verbose)
+            self.modelpre = SiameseOnnx(self.per, providers=['CPUExecutionProvider'])
     
 
 
@@ -220,9 +220,11 @@ class GTnine():
 
 
 if __name__ == "__main__":
-    gt = GTnine(path_yolo_class="model/nine3/best.pt")
+    from conf.config import gtconf
+    gt = GTnine(pclass=gtconf['nine']['pclass'])
     charimg = "assets/nine3/ques_00000_37458.png"
     background = "assets/nine3/img_00000_37458.png"
+
     out = gt.run(background, charimg)
     from src.utils.outdata import Outfile
     Outfile.draw_image(background, 

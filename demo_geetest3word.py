@@ -1,16 +1,13 @@
 from src.method.GTClick import GTClick
 from src.utils.outdata import Outfile
 from pathlib import Path
+from conf.config import gtconf
 
-path_yolo_detect = "model/g3word6300/detect.pt"
-path_per = "model/g3word6300/simvgg19.onnx"
-path_yolo_class = "model/g3word6300/muti.pt"
-detectclass = ["char", "target"] #当有两个标签的时候,具有顺序的一定要放在第一个
 gtclick = GTClick(
-    path_yolo_detect = path_yolo_detect,
-    path_per = path_per,
-    path_yolo_class = path_yolo_class,
-    detectclass = detectclass,
+    pdetect = gtconf["word"]['pdetect'],
+    per = gtconf["word"]['per'],
+    pclass = gtconf["word"]['pclass'],
+    pclasstags =gtconf["word"]['pclasstags'],
     chars_issorted = False,
     rmalpha = True,
 )

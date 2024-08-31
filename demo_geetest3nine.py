@@ -2,13 +2,18 @@
 from src.method.GTnine import GTnine
 from src.utils.outdata import Outfile
 from pathlib import Path
+from conf.config import gtconf
+
+
+
 
 if __name__ == "__main__":
-    gt = GTnine(path_yolo_class="model/nine3/best.pt")
+    gt = GTnine(pclass=gtconf["nine"]["pclass"])
     charimg = ["assets/nine3/ques_00001_54480.png"]
     background = "assets/nine3/img_00000_37458.png"
 
     outdir = "example/temp3"
+    Path(outdir).mkdir(parents=True, exist_ok=True)
     Path(outdir).mkdir(exist_ok=True)
     test_img = crop_nine(background)
     for index, i in enumerate(test_img):

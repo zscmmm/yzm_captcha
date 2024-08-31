@@ -120,14 +120,3 @@ class YoloC(YOLO):
         return top1name,  top1conf, top5name, top5conf
 
 
-if __name__ == '__main__':
-    path_yolo_detect = "model/g3word6300/detect.pt"
-    path_per = "model/g3word6300/simvgg19.onnx"
-    path_yolo_class = "model/g3word6300/muti.pt"
-
-    ##### 对于检测模型的测试
-    # m1 = YoloD(path_yolo_detect, task="detect", verbose=False)
-    # m1.imgsz
-
-    # m3 = YOLO(path_yolo_detect, task="detect", verbose=False)
-    # m3.model.args["imgsz"]

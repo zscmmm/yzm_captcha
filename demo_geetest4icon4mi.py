@@ -2,22 +2,16 @@
 from src.utils.outdata import Outfile
 
 from pathlib import Path
+from conf.config import gtconf
 
-
-path_yolo_detect = "model/icon4mi800/detect.pt"
-path_per = "model/icon4mi800/simvgg19.onnx"
-path_yolo_class = "model/icon4mi800/muti.pt"
-detectclass = ["target"] #当有两个标签的时候,具有顺序的一定要放在第一个
 gtclick = GTClick(
-    path_yolo_detect = path_yolo_detect,
-    path_per = path_per,
-    path_yolo_class = path_yolo_class,
-    detectclass = detectclass,
+    pdetect = gtconf['icon4mi']['pdetect'],
+    per = gtconf['icon4mi']['per'],
+    pclass = gtconf['icon4mi']['pclass'],
+    pclasstags = gtconf['icon4mi']['pclasstags'],
     chars_issorted = True,
     rmalpha = True,
 )
-
-
 if __name__ == '__main__':
     i = "assets/icon4/imgs_00142_59845.png"
     extraicon = ["assets/icon4/3f9cdf.png", "assets/icon4/c59e7a.png", "assets/icon4/94cb8d.png"]

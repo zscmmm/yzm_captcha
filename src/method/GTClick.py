@@ -12,11 +12,11 @@ from pathlib import Path
 class GModel(object):
     def __init__(
             self, 
-            path_yolo_detect: str,
-            path_per: str,
-            path_yolo_class: Optional[str] = None,
-            detectclass: list[str] = ["icon"], #会根据这个类别来进行分类, 最多支持两个类别, 如果是两个,则第一个是具有顺序的字符类别,第二个是目标类别
-            chars_issorted: bool = False, # 当 chars_issorted 为 True 时, 表示手动输入chars 类别,并且具有顺序, 只有 detectclass 为1时才有效
+            pdetect: str,
+            per: str,
+            pclass: Optional[str] = None,
+            pclasstags: list[str] = ["icon"], #会根据这个类别来进行分类, 最多支持两个类别, 如果是两个,则第一个是具有顺序的字符类别,第二个是目标类别
+            chars_issorted: bool = False, # 当 chars_issorted 为 True 时, 表示手动输入chars 类别,并且具有顺序, 只有 pclasstags 为1时才有效
             rmalpha: bool = False, # 只有在 chars_issorted 为 True 时才有效
             conf=0.65, 
             verbose=False,
@@ -25,43 +25,43 @@ class GModel(object):
         """
         实现图像点选功能, 通过 yolo 检测模型找到目标,然后利用孪生神经网络对图片进行排序, 找出对应相似度最高的图片,最后利用 yolo 分类模型进行字符识别
         参数:
-        - path_yolo_detect: str, yolo 检测模型路径
-        - path_per: str, 孪生神经网络模型路径
-        - path_yolo_class: Optional[str], yolo 分类模型路径
-        - detectclass: list[str], 会根据这个类别来进行分类, 最多支持两个类别, 如果是两个,则第一个是具有顺序的字符类别,第二个是目标类别
-        - chars_issorted: bool, 当 chars_issorted 为 True 时, 表示手动输入chars 类别,并且具有顺序, 只有 detectclass 为1时才有效
+        - pdetect: str, yolo 检测模型路径
+        - per: str, 孪生神经网络模型路径
+        - pclass: Optional[str], yolo 分类模型路径
+        - pclasstags: list[str], 会根据这个类别来进行分类, 最多支持两个类别, 如果是两个,则第一个是具有顺序的字符类别,第二个是目标类别
+        - chars_issorted: bool, 当 chars_issorted 为 True 时, 表示手动输入chars 类别,并且具有顺序, 只有 pclasstags 为1时才有效
         - rmalpha: bool, 只有在 chars_issorted 为 True 时才有效, 表示是否去除图片的透明度
         - verbose: bool, 是否打印详细信息
         """
-        self.path_yolo_detect = path_yolo_detect
-        self.path_per = path_per
-        self.path_yolo_class = path_yolo_class
-        self.detectclass = detectclass
+        self.pdetect = pdetect
+        self.per = per
+        self.pclass = pclass
+        self.pclasstags = pclasstags
         self.conf = conf 
         self.verbose = verbose
         self.rmalpha = rmalpha
         self.chars_issorted = chars_issorted
         self.modeltype = None
-        if len(self.detectclass) == 1 and self.chars_issorted:
+        if len(self.pclasstags) == 1 and self.chars_issorted:
             self._chars_issorted = True
         else:
             self._chars_issorted = False
-        assert len(self.detectclass) in [1, 2], f"detectclass length is not in [1, 2], but {len(self.detectclass)}"
+        assert len(self.pclasstags) in [1, 2], f"pclasstags length is not in [1, 2], but {len(self.pclasstags)}"
 
-        self.modelyolod = YoloD(self.path_yolo_detect, task="detect", verbose=self.verbose, **kwargs)
+        self.modelyolod = YoloD(self.pdetect, task="detect", verbose=self.verbose, **kwargs)
         # 检查输入的类别是否在模型中
-        if not self.path_per  and not self.path_yolo_class:
-            assert False, f"path_per and path_yolo_class is None"
-        elif not self.path_per and self.path_yolo_class:
+        if not self.per  and not self.pclass:
+            assert False, f"per and pclass is None"
+        elif not self.per and self.pclass:
             self.modeltype = 1
-            self.modelyoloc = YoloC(self.path_yolo_class, task="classify", verbose=self.verbose, **kwargs)
-        elif self.path_per and not self.path_yolo_class:
+            self.modelyoloc = YoloC(self.pclass, task="classify", verbose=self.verbose, **kwargs)
+        elif self.per and not self.pclass:
             self.modeltype = 2
-            self.modelpre = SiameseOnnx(self.path_per, providers=['CPUExecutionProvider'])
+            self.modelpre = SiameseOnnx(self.per, providers=['CPUExecutionProvider'])
         else:
             self.modeltype = 3
-            self.modelyoloc = YoloC(self.path_yolo_class, task="classify", verbose=self.verbose, **kwargs)
-            self.modelpre = SiameseOnnx(self.path_per, providers=['CPUExecutionProvider'])
+            self.modelyoloc = YoloC(self.pclass, task="classify", verbose=self.verbose, **kwargs)
+            self.modelpre = SiameseOnnx(self.per, providers=['CPUExecutionProvider'])
 
         self._img = None
         self._image_path = None
@@ -89,13 +89,13 @@ class GModel(object):
         xyxy, xywh, box_name, info = self.modelyolod.extract_info(results)
         
         ### 2. 根据目标按照坐标进行分类 (这里为验证模型, 直接采用模型预测的类别进行分类过滤)
-        assert self.detectclass[-1] in box_name, f"detectclass[-1]: {self.detectclass[-1]} not in box_name: {box_name}"
-        targets_xyxy = [i.get("xyxy") for i in info if i.get("classes") == self.detectclass[-1]]
+        assert self.pclasstags[-1] in box_name, f"pclasstags[-1]: {self.pclasstags[-1]} not in box_name: {box_name}"
+        targets_xyxy = [i.get("xyxy") for i in info if i.get("classes") == self.pclasstags[-1]]
         chars_xyxy= None 
         if not self._chars_issorted:
-            assert len(self.detectclass) == 2, f"detectclass length is not 2, but {len(self.detectclass)}"
-            assert self.detectclass[0] in box_name, f"detectclass[0]: {self.detectclass[0]} not in box_name: {box_name}"
-            chars_xyxy = [i.get("xyxy") for i in info if i.get("classes") == self.detectclass[0]]
+            assert len(self.pclasstags) == 2, f"pclasstags length is not 2, but {len(self.pclasstags)}"
+            assert self.pclasstags[0] in box_name, f"pclasstags[0]: {self.pclasstags[0]} not in box_name: {box_name}"
+            chars_xyxy = [i.get("xyxy") for i in info if i.get("classes") == self.pclasstags[0]]
             chars_xyxy.sort(key=lambda x: x[0])
             if len(chars_xyxy) != len(targets_xyxy):
                 min_len = min(len(chars_xyxy), len(targets_xyxy))
