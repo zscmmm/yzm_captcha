@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "node-rsa": "^1.1.1"
+  }
+}

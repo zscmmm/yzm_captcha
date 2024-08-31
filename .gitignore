@@ -1,0 +1,14 @@
+__pycache__
+*.onnx
+*.pt
+model/**
+*.log
+temp
+temp1/
+temp2/
+temp3/
+.DS_Store
+node_modules
+package-lock.json
+log.txt
+!model/sha256.txt
